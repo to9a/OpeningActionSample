@@ -1,6 +1,7 @@
 package jp.co.altec.openingactionsample;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 
 public class SettingsActivity extends Activity {
     UdpConnection udp;
@@ -27,12 +29,16 @@ public class SettingsActivity extends Activity {
         }
     };
 
+    Switch mObserverBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
         Button btn = (Button)findViewById(R.id.button);
+        mObserverBtn = (Switch)findViewById(R.id.switchObs);
+
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,6 +47,11 @@ public class SettingsActivity extends Activity {
 
                 Log.d("DEBUG", "/// DATA CONNECTION ///");
                 mHandler.postDelayed(mRunnable, 300);
+
+                if (mObserverBtn.isChecked()) {
+                    Intent intent = new Intent(getApplicationContext(), ObserverActivity.class);
+                    startActivity(intent);
+                }
             }
         });
     }
