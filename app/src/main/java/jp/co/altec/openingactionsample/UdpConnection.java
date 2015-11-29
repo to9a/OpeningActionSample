@@ -23,7 +23,7 @@ public class UdpConnection {
     private String mMyIpAddress;
     DeviceInfo mDeviceInfo;
 
-    private DatagramSocket mReceiveUdpSocket;
+    private DatagramSocket mUdpSocket;
     private final int UDP_PORT = 10000;
     private boolean close = false;
 
@@ -45,8 +45,8 @@ public class UdpConnection {
                 String receiveData;
                 try {
                     //受信用ソケット
-                    mReceiveUdpSocket = new DatagramSocket(UDP_PORT);
-                    Log.d(TAG, "receive socket open. port :" + mReceiveUdpSocket.getLocalPort());
+                    mUdpSocket = new DatagramSocket(UDP_PORT);
+                    Log.d(TAG, "receive socket open. port :" + mUdpSocket.getLocalPort());
 
                     //waiting = trueの間、ブロードキャストを受け取る
                     while(!close){
@@ -56,7 +56,7 @@ public class UdpConnection {
                         //ゲスト端末からのブロードキャストを受け取る
                         //受け取るまでは待ち状態になる
                         Log.d(TAG, "waiting packet data ..........");
-                        mReceiveUdpSocket.receive(packet);
+                        mUdpSocket.receive(packet);
 
                         int length = packet.getLength();
                         receiveData = new String(buf, 0, length);
@@ -71,7 +71,7 @@ public class UdpConnection {
 
                         Log.d(TAG, "receive socketAddress is " + packet.getSocketAddress().toString() + " packet data : " + receiveData);
                     }
-                    mReceiveUdpSocket.close();
+                    mUdpSocket.close();
                 } catch (SocketException e) {
                     close = true;
                     e.printStackTrace();
@@ -127,13 +127,10 @@ public class UdpConnection {
             @Override
             public void run() {
                 try {
-//                    DatagramSocket udpSocket = new DatagramSocket(UDP_PORT);
-                    DatagramSocket udpSocket = mReceiveUdpSocket;
-                    udpSocket.setBroadcast(true);
+                    mUdpSocket.setBroadcast(true);
                     String data = mDeviceInfo.Format();
                     DatagramPacket packet = new DatagramPacket(data.getBytes(), data.getBytes().length, getBroadcastAddress(), UDP_PORT);
-                    udpSocket.send(packet);
-//                    udpSocket.close();
+                    mUdpSocket.send(packet);
                 } catch (SocketException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
